@@ -1,6 +1,6 @@
 # GoUp - Golang updater
 
-Check for new **Golang** versions on *https://god.dev/dl/?mode=json*.
+Check for new **Golang** versions on *https://go.dev/dl/?mode=json*.
 
 Compare with the current version installed.
 
@@ -12,7 +12,7 @@ This is a learning project. Needs improvement.
 
 ## Golang website endpoint
 
-`GET https://god.dev/dl/?mode=json`
+`GET https://go.dev/dl/?mode=json`
 
 **Response**
 ```json
