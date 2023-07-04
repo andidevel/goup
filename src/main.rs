@@ -33,6 +33,7 @@ fn get_new_version() -> Result<req::VersionItem, Box<dyn std::error::Error>> {
 }
 
 fn main() {
+    // TODO: get info from host machine
     let target_os = "linux";
     let target_arch = "amd64";
 

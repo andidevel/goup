@@ -5,7 +5,6 @@ use serde::{Serialize, Deserialize};
 
 const GO_VERSION_ENDPOINT: &'static str = "https://go.dev/dl/?mode=json";
 const GO_DOWNLOAD_ENDPOINT: &'static str = "https://go.dev/dl/";
-// const GO_DOWNLOAD_PATH: &'static str = "/home/andi/Downloads";
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct FileItem {
@@ -24,22 +23,6 @@ pub struct VersionItem {
     pub stable: bool,
     pub files: Vec<FileItem>,
 }
-
-// impl VersionItem {
-//     pub fn new() -> Self {
-//         Self {
-//             version: String::from(""),
-//             stable: true,
-//             files: Vec::new(),
-//         }
-//     }
-
-//     pub fn from(item: VersionItem) -> Self {
-//         Self {
-//             ..item
-//         }
-//     }
-// }
 
 pub fn get() -> Result<Vec<VersionItem>, reqwest::Error> {
     let response = reqwest::blocking::get(GO_VERSION_ENDPOINT)?
