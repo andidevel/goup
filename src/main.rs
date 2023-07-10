@@ -33,11 +33,12 @@ fn get_new_version() -> Result<req::VersionItem, Box<dyn std::error::Error>> {
 }
 
 fn main() {
-    // TODO: get info from host machine
-    let target_os = "linux";
-    let target_arch = "amd64";
-
     println!("goup version {}\n", VERSION);
+
+    // TODO: get info from host machine
+    let target_os = cmd::os_type().unwrap_or("unknown".to_string());
+    let target_arch = cmd::os_arch();
+    println!("OS: {} Arch: {}", target_os, target_arch);
 
     let args = Cli::parse();
 
@@ -68,7 +69,7 @@ fn main() {
     if last_go_version.gt(&local_go_version) {
         println!("Last version is greater than local version...");
         for f in last_go_version_remote.files {
-            if f.os.as_str() == target_os && f.arch.as_str() == target_arch && f.kind == "archive" {
+            if f.os == target_os && f.arch == target_arch && f.kind == "archive" {
                 println!("Downloading file: {}", f.filename);
                 let version_file: req::FileDownload = req::FileDownload::new(path_to_download.to_str().unwrap(), &f.filename);
                 if !path::Path::new(version_file.download_to.as_str()).exists() {

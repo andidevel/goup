@@ -1,9 +1,11 @@
-use regex::Regex;
 use std::process::Command;
 use std::path;
 use std::str;
 use std::{error::Error, fmt};
 use std::fs;
+
+use regex::Regex;
+use os_info;
 
 #[derive(Debug)]
 pub struct GoVersion {
@@ -150,4 +152,50 @@ fn conv_to<T: std::str::FromStr>(s: &str) -> Option<T> {
         return Some(result);
     }
     None
+}
+
+pub fn os_type() -> Option<String> {
+    #[cfg(target_os = "linux")]
+    {
+        Some("linux".to_string())
+    }
+    #[cfg(any(target_vendor = "apple", target_os = "windows"))]
+    {
+        let typ = unsafe { ffi::CStr::from_ptr(get_os_type() as *const c_char).to_bytes() };
+        Some(String::from_utf8_lossy(typ).into_owned())
+    }
+    #[cfg(target_os = "solaris")]
+    {
+        Some("solaris".to_string())
+    }
+    #[cfg(target_os = "illumos")]
+    {
+        Some("illumos".to_string())
+    }
+    #[cfg(target_os = "freebsd")]
+    {
+        Some("freebsd".to_string())
+    }
+    #[cfg(target_os = "openbsd")]
+    {
+        Some("openbsd".to_string())
+    }
+    #[cfg(target_os = "netbsd")]
+    {
+        Some("netbsd".to_string())
+    }
+    #[cfg(not(any(target_os = "linux", target_vendor = "apple", target_os = "windows", target_os = "solaris", target_os = "illumos", target_os = "freebsd", target_os = "openbsd", target_os = "netbsd")))]
+    {
+        None
+    }
+}
+
+pub fn os_arch() -> String {
+    let info = os_info::get();
+    let arch = info.architecture().unwrap_or("Unknown");
+    match arch {
+        "x86_64" => "amd64".to_string(),
+        "x86"    => "386".to_string(),
+        _        => arch.to_string(),
+    }
 }
