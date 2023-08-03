@@ -3,8 +3,8 @@ use std::fs::File;
 use std::path::PathBuf;
 use serde::{Serialize, Deserialize};
 
-const GO_VERSION_ENDPOINT: &'static str = "https://go.dev/dl/?mode=json";
-const GO_DOWNLOAD_ENDPOINT: &'static str = "https://go.dev/dl/";
+const GO_VERSION_ENDPOINT: &str  = "https://go.dev/dl/?mode=json";
+const GO_DOWNLOAD_ENDPOINT: &str = "https://go.dev/dl/";
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct FileItem {

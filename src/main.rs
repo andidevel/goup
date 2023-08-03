@@ -3,8 +3,11 @@ use std::path;
 
 use clap::Parser;
 
-mod req;
-mod cmd;
+use goup::{
+    req,
+    cmd,
+    get_new_version,
+};
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 
@@ -14,22 +17,6 @@ struct Cli {
     gobin: Option<path::PathBuf>,
     #[arg(short, long)]
     temp: Option<path::PathBuf>,
-}
-
-fn get_new_version() -> Result<req::VersionItem, Box<dyn std::error::Error>> {
-    println!("Checking last Golang version...");
-    let go_response = req::get()?;
-    // Usually, the first item is the latest version available
-    if go_response.len() > 0 {
-       return Ok(go_response.get(0).cloned().unwrap());
-    }
-    Err(
-        Box::new(
-            cmd::GoError {
-                message: String::from("Golang API return an empty version list")
-            }
-        )
-    )
 }
 
 fn main() {
@@ -82,13 +69,13 @@ fn main() {
                 println!("Installing...");
                 match cmd::remove_dir(local_go_install.as_str()) {
                     Ok(()) => (),
-                    Err(error) => println!(" -> Error removing `{}`: {}", local_go_install, error.to_string()),
+                    Err(error) => println!(" -> Error removing `{}`: {}", local_go_install, error),
                 };
                 
                 println!("Unpacking `{}`", version_file.download_to.as_str());
                 match cmd::go_install(go_install_to, version_file.download_to.as_str()) {
                     Ok(output) => println!("{}", output),
-                    Err(error) => panic!("Error installing: {}", error.to_string()),
+                    Err(error) => panic!("Error installing: {}", error),
                 };
                 println!("Verifying installation...");
                 let installed_go_version = match go_cmd.version() {

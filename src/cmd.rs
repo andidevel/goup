@@ -3,6 +3,7 @@ use std::path;
 use std::str;
 use std::{error::Error, fmt};
 use std::fs;
+use std::cmp::PartialEq;
 
 use regex::Regex;
 use os_info;
@@ -20,7 +21,7 @@ impl GoVersion {
     pub fn new(version_str: String) -> Self {
         //Remove the "go" word, if any
         let go_version = version_str.replace("go", "");
-        let scheme: Vec<&str> = go_version.split(".").collect();
+        let scheme: Vec<&str> = go_version.split('.').collect();
         let mut major: i32 = 0;
         let mut minor: i32 = 0;
         let mut patch: i32 = 0;
@@ -48,8 +49,10 @@ impl GoVersion {
         }
         false
     }
+}
 
-    pub fn eq(&self, other: &GoVersion) -> bool {
+impl PartialEq for GoVersion {
+    fn eq(&self, other: &GoVersion) -> bool {
         self.version_float == other.version_float
     }
 }
@@ -88,7 +91,7 @@ impl ShellCommand {
         let cmd = Command::new(self.cmd.as_str())
             .args(self.args.as_slice())
             .output()
-            .expect(format!("Failed to run `{}`: Is it in your PATH/installed?", self.cmd.as_str()).as_str());
+            .unwrap_or_else(|_| panic!("Failed to run `{}`: Is it in your PATH/installed?", self.cmd.as_str()));
         if let Ok(output) = str::from_utf8(cmd.stdout.as_slice()) {
             return Ok(String::from(output));
         }
@@ -141,10 +144,7 @@ pub fn remove_dir(dir: &str) -> std::io::Result<()> {
 
 pub fn go_install(install_to: &str, install_from: &str) -> Result<String, GoError> {
     let cmd = ShellCommand::new("tar", &["-C", install_to, "-xzf", install_from]);
-    match cmd.exec() {
-        Ok(output) => Ok(output),
-        Err(error) => Err(error),
-    }
+    cmd.exec()
 }
 
 fn conv_to<T: std::str::FromStr>(s: &str) -> Option<T> {
