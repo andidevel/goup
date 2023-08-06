@@ -97,7 +97,7 @@ impl ShellCommand {
         }
         Err(
             GoError {
-                message: String::from("Go cmd ran, but failed to get the output!!!")
+                message: format!("{} ran, but failed to get the output!!!", self.cmd.as_str())
             }
         )    
     }
