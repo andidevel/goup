@@ -13,10 +13,10 @@ const VERSION: &str = env!("CARGO_PKG_VERSION");
 
 #[derive(Parser)]
 struct Cli {
-    #[arg(short='b', long)]
-    gobin: Option<path::PathBuf>,
-    #[arg(short, long)]
-    temp: Option<path::PathBuf>,
+    #[arg(short='p', long="path")]
+    go_bin_path: Option<path::PathBuf>,
+    #[arg(short='t', long="temp")]
+    temp_dir: Option<path::PathBuf>,
 }
 
 fn main() {
@@ -35,7 +35,7 @@ fn main() {
     };
     let last_go_version: cmd::GoVersion = cmd::GoVersion::new(last_go_version_remote.version);
 
-    let go_cmd = cmd::GoCommand::new(args.gobin.unwrap_or(path::PathBuf::from("/usr/local/go/bin/")));
+    let go_cmd = cmd::GoCommand::new(args.go_bin_path.unwrap_or(path::PathBuf::from("/usr/local/go/bin/")));
     let local_go_version = match go_cmd.version() {
         Ok(version) => version,
         Err(error) => panic!("Error getting local version: {:?}", error),
@@ -52,7 +52,7 @@ fn main() {
     println!("Installed path: [{}]", local_go_install);
     println!("    Install to: [{}]", go_install_to);
 
-    let path_to_download = args.temp.unwrap_or(env::temp_dir());
+    let path_to_download = args.temp_dir.unwrap_or(env::temp_dir());
     if last_go_version.gt(&local_go_version) {
         println!("Last version is greater than local version...");
         for f in last_go_version_remote.files {
